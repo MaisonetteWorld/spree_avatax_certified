@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 3.1.0'
+  s.add_dependency 'spree_core', '~> 3.1.3'
   s.add_dependency 'json', '~> 1.7'
   s.add_dependency 'addressable', '~> 2.3'
-  s.add_dependency 'rest-client', '~> 1.7'
+  s.add_dependency 'rest-client', '~> 2.0'
   s.add_dependency 'psych', '~> 2.0.4'
   s.add_dependency 'logging', '~> 1.8'
 
