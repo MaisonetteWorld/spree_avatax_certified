@@ -41,7 +41,7 @@ module SpreeAvataxCertified
         Line1: @ship_address.address1,
         Line2: @ship_address.address2,
         City: @ship_address.city,
-        Region: @ship_address.state_name,
+        Region: @ship_address.state_text,
         Country: @ship_address.country.try(:iso),
         PostalCode: @ship_address.zipcode
       }
