@@ -16,8 +16,8 @@ Spree::Payment.class_eval do
     # without reload order was charged without tax amount
     order.reload
 
-    if self.amount != order.total
-      self.update_attributes(amount: order.total)
+    if self.amount != order.order_total_after_store_credit
+      self.update_attributes(amount: order.order_total_after_store_credit)
     end
   end
 
