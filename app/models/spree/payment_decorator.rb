@@ -12,6 +12,7 @@ Spree::Payment.class_eval do
   end
 
   def avalara_update
+    return if self.source.class.name == "Spree::StoreCredit"
     # without reload order was charged without tax amount
     order.reload
 
