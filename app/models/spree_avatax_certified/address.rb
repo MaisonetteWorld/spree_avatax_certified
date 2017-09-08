@@ -51,6 +51,7 @@ module SpreeAvataxCertified
       if order.shipments.any?
         stock_loc_ids = order.shipments.pluck(:stock_location_id).uniq
         Spree::StockLocation.where(id: stock_loc_ids).each do |stock_location|
+          stock_location = get_nexus(stock_location)
           addresses << {
             AddressCode: "#{stock_location.id}",
             Line1: stock_location.address1,
@@ -61,6 +62,11 @@ module SpreeAvataxCertified
           }
         end
       end
+    end
+
+    def get_nexus(stock_location)
+      nexus = stock_location.taxon.stock_locations.detect { |stock_loc| stock_loc.state_id == @ship_address.state_id }
+      nexus ? nexus : stock_location.taxon.stock_locations[0]
     end
 
     def validate

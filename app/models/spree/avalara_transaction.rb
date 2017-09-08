@@ -108,7 +108,11 @@ module Spree
 
       mytax = TaxSvc.new
 
-      tax_result = mytax.get_tax(gettaxes)
+      stock_loc_ids = order.shipments.pluck(:stock_location_id).uniq
+      Spree::StockLocation.where(id: stock_loc_ids).each do |stock_location|
+        gettaxes[:CompanyCode] = stock_location.taxon.name
+        tax_result = mytax.get_tax(gettaxes)
+      end
 
       AVALARA_TRANSACTION_LOGGER.info_and_debug('tax result', tax_result)
 
@@ -156,9 +160,9 @@ module Spree
     end
 
     def base_tax_hash
+      # CompanyCode: Spree::Config.avatax_company_code,
       {
         CustomerCode: customer_code,
-        CompanyCode: Spree::Config.avatax_company_code,
         CustomerUsageType: order.customer_usage_type,
         ExemptionNo: order.user.try(:exemption_number),
         Client:  avatax_client_version,
