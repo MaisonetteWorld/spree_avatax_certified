@@ -20,19 +20,22 @@ module SpreeAvataxCertified
     def build_addresses
       origin_address
       order_ship_address unless @ship_address.nil?
-      origin_ship_addresses
+      # origin_ship_addresses
     end
 
     def origin_address
+      origin = order.shipments.pluck(:stock_location_id).uniq[0]
+      stock_location = Spree::StockLocation.find(origin)
       addresses << {
-        AddressCode: 'Orig',
-        Line1: @origin_address['Address1'],
-        Line2: @origin_address['Address2'],
-        City: @origin_address['City'],
-        Region: @origin_address['Region'],
-        PostalCode: @origin_address['Zip5'],
-        Country: @origin_address['Country']
+        AddressCode: "Orig",
+        Line1: stock_location.address1,
+        Line2: stock_location.address2,
+        City: stock_location.city,
+        PostalCode: stock_location.zipcode,
+        Country: stock_location.country.try(:iso),
+        Region: stock_location.state_text
       }
+      binding.pry
     end
 
     def order_ship_address

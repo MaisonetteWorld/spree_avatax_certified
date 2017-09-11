@@ -1,5 +1,6 @@
 require 'logging'
 require_dependency 'spree/order'
+require 'pry'
 
 module Spree
   class AvalaraTransaction < ActiveRecord::Base
@@ -107,7 +108,7 @@ module Spree
       AVALARA_TRANSACTION_LOGGER.debug gettaxes
 
       mytax = TaxSvc.new
-
+      tax_result = {}
       stock_loc_ids = order.shipments.pluck(:stock_location_id).uniq
       Spree::StockLocation.where(id: stock_loc_ids).each do |stock_location|
         gettaxes[:CompanyCode] = stock_location.taxon.name
@@ -115,7 +116,7 @@ module Spree
       end
 
       AVALARA_TRANSACTION_LOGGER.info_and_debug('tax result', tax_result)
-
+      binding.pry
       return { TotalTax: '0.00' } if tax_result == 'error in Tax'
       return tax_result if tax_result['ResultCode'] == 'Success'
     end
