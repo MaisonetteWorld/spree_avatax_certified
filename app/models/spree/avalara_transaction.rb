@@ -116,7 +116,6 @@ module Spree
       end
 
       AVALARA_TRANSACTION_LOGGER.info_and_debug('tax result', tax_result)
-      binding.pry
       return { TotalTax: '0.00' } if tax_result == 'error in Tax'
       return tax_result if tax_result['ResultCode'] == 'Success'
     end

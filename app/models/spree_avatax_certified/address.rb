@@ -35,7 +35,6 @@ module SpreeAvataxCertified
         Country: stock_location.country.try(:iso),
         Region: stock_location.state_text
       }
-      binding.pry
     end
 
     def order_ship_address
