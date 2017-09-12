@@ -2,13 +2,14 @@ module SpreeAvataxCertified
   class Line
     attr_reader :order, :lines
 
-    def initialize(order, invoice_type, refund = nil)
+    def initialize(order, invoice_type, refund = nil, stock_location)
       @logger ||= AvataxHelper::AvataxLog.new('avalara_order_lines', 'SpreeAvataxCertified::Line', "Building Lines for Order#: #{order.number}")
       @order = order
       @invoice_type = invoice_type
       @lines = []
       @refund = refund
       @refunds = []
+      @stock_location = stock_location
       build_lines
       @logger.debug @lines
     end
@@ -39,13 +40,13 @@ module SpreeAvataxCertified
     end
 
     def item_lines_array
-      order.line_items.each do |line_item|
+      order.line_items.select{|li| li.inventory_units.first.try(:shipment).try(:stock_location_id) == @stock_location.id}.each do |line_item|
         lines << item_line(line_item)
       end
     end
 
     def shipment_lines_array
-      order.shipments.each do |shipment|
+      order.shipments.select{|shipment| shipment.stock_location_id == @stock_location.id}.each do |shipment|
         next unless shipment.tax_category
         lines << shipment_line(shipment)
       end
@@ -117,7 +118,7 @@ module SpreeAvataxCertified
 
       return 'Orig' if inventory_units.blank?
 
-      # What if inventory units have different stock locations?
+      # What if inventory units haveq.first.try(:shipment).try(:stock_location_id) different stock locations?
       stock_loc_id = inventory_units.first.try(:shipment).try(:stock_location_id)
 
       stock_loc_id.nil? ? 'Orig' : "#{stock_loc_id}"

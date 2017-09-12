@@ -7,10 +7,10 @@ module SpreeAvataxCertified
   class Address
     attr_reader :order, :addresses
 
-    def initialize(order)
+    def initialize(order, stock_location)
       @order = order
       @ship_address = order.ship_address
-      @origin_address = JSON.parse(Spree::Config.avatax_origin)
+      @stock_location = stock_location
       @addresses = []
       @logger ||= AvataxHelper::AvataxLog.new('avalara_order_addresses', 'SpreeAvataxCertified::Address', "Building Addresses for Order#: #{order.number}")
       build_addresses
@@ -24,16 +24,15 @@ module SpreeAvataxCertified
     end
 
     def origin_address
-      origin = order.shipments.pluck(:stock_location_id).uniq[0]
-      stock_location = Spree::StockLocation.find(origin)
+      get_nexus
       addresses << {
         AddressCode: "Orig",
-        Line1: stock_location.address1,
-        Line2: stock_location.address2,
-        City: stock_location.city,
-        PostalCode: stock_location.zipcode,
-        Country: stock_location.country.try(:iso),
-        Region: stock_location.state_text
+        Line1: @stock_location.address1,
+        Line2: @stock_location.address2,
+        City: @stock_location.city,
+        PostalCode: @stock_location.zipcode,
+        Country: @stock_location.country.try(:iso),
+        Region: @stock_location.state_text
       }
     end
 
@@ -66,9 +65,9 @@ module SpreeAvataxCertified
       end
     end
 
-    def get_nexus(stock_location)
-      nexus = stock_location.taxon.stock_locations.detect { |stock_loc| stock_loc.state_id == @ship_address.state_id }
-      nexus ? nexus : stock_location.taxon.stock_locations[0]
+    def get_nexus
+      nexus = @stock_location.taxon.stock_locations.detect { |stock_loc| stock_loc.state_id == @ship_address.state_id }
+      @stock_location = nexus ? nexus : @stock_location.taxon.stock_locations[0]
     end
 
     def validate
