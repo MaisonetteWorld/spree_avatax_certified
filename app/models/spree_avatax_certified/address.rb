@@ -20,7 +20,7 @@ module SpreeAvataxCertified
     def build_addresses
       origin_address
       order_ship_address unless @ship_address.nil?
-      # origin_ship_addresses
+      origin_ship_addresses
     end
 
     def origin_address
@@ -50,18 +50,18 @@ module SpreeAvataxCertified
 
     def origin_ship_addresses
       if order.shipments.any?
-        stock_loc_ids = order.shipments.pluck(:stock_location_id).uniq
-        Spree::StockLocation.where(id: stock_loc_ids).each do |stock_location|
-          stock_location = get_nexus(stock_location)
+        # stock_loc_ids = order.shipments.pluck(:stock_location_id).uniq
+        # Spree::StockLocation.where(id: stock_loc_ids).each do |stock_location|
+        #   stock_location = get_nexus(stock_location)
           addresses << {
-            AddressCode: "#{stock_location.id}",
-            Line1: stock_location.address1,
-            Line2: stock_location.address2,
-            City: stock_location.city,
-            PostalCode: stock_location.zipcode,
-            Country: stock_location.country.try(:iso)
+            AddressCode: "#{@stock_location.id}",
+            Line1: @stock_location.address1,
+            Line2: @stock_location.address2,
+            City: @stock_location.city,
+            PostalCode: @stock_location.zipcode,
+            Country: @stock_location.country.try(:iso)
           }
-        end
+        # end
       end
     end
 
