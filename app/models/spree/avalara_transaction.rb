@@ -114,13 +114,12 @@ module Spree
 
         mytax = TaxSvc.new
         gettaxes[:CompanyCode] = stock_location.taxon.name
-        gettaxes[:ExemptionNo] = stock_location.country.try(:iso) != "US" ? 1 : order.user.try(:exemption_number)
+        gettaxes[:ExemptionNo] = avatax_address.exemption
         tax_result = mytax.get_tax(gettaxes)
         unless tax_result == 'error in Tax'
           final_tax == {} ? final_tax = tax_result : merge_taxes(final_tax, tax_result)
         end
       end
-      binding.pry
       AVALARA_TRANSACTION_LOGGER.info_and_debug('tax result', tax_result)
       return { TotalTax: '0.00' } if tax_result == 'error in Tax'
       return final_tax if tax_result['ResultCode'] == 'Success'
@@ -185,6 +184,10 @@ module Spree
         DetailLevel: 'Tax',
         CurrencyCode: order.currency
       }
+    end
+    def get_nexus
+      nexus = stock_location.taxon.stock_locations.detect { |stock_loc| stock_loc.state_id == @ship_address.state_id }
+      stock_location = nexus ? nexus : stock_location.taxon.stock_locations[0]
     end
 
     def customer_code

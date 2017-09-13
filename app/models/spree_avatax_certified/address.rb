@@ -70,6 +70,10 @@ module SpreeAvataxCertified
       @stock_location = nexus ? nexus : @stock_location.taxon.stock_locations[0]
     end
 
+    def exemption
+      @stock_location.country.try(:iso) != "US" ? 1 : order.user.try(:exemption_number)
+    end
+
     def validate
       return 'Address validation disabled' unless address_validation_enabled?
       return @ship_address if @ship_address.nil?
