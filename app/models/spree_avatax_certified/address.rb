@@ -20,11 +20,10 @@ module SpreeAvataxCertified
     def build_addresses
       origin_address
       order_ship_address unless @ship_address.nil?
-      origin_ship_addresses
+      # origin_ship_addresses
     end
 
     def origin_address
-      get_nexus
       addresses << {
         AddressCode: "Orig",
         Line1: @stock_location.address1,
@@ -65,10 +64,6 @@ module SpreeAvataxCertified
       end
     end
 
-    def get_nexus
-      nexus = @stock_location.taxon.stock_locations.detect { |stock_loc| stock_loc.state_id == @ship_address.state_id }
-      @stock_location = nexus ? nexus : @stock_location.taxon.stock_locations[0]
-    end
 
     def exemption
       @stock_location.country.try(:iso) != "US" ? 1 : order.user.try(:exemption_number)
