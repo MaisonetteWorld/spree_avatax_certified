@@ -18,7 +18,7 @@ module SpreeAvataxCertified
     end
 
     def build_addresses
-      origin_address
+      # origin_address
       order_ship_address unless @ship_address.nil?
       # origin_ship_addresses
     end
