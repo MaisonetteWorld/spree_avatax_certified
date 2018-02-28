@@ -113,7 +113,7 @@ module Spree
         AVALARA_TRANSACTION_LOGGER.debug gettaxes
 
         mytax = TaxSvc.new
-        gettaxes[:CompanyCode] = stock_location.taxon.name
+        gettaxes[:CompanyCode] = stock_location.name
         gettaxes[:ExemptionNo] = avatax_address.exemption
         tax_result = mytax.get_tax(gettaxes)
         unless tax_result == 'error in Tax'
